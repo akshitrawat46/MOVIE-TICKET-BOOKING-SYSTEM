@@ -1,0 +1,1 @@
+UML diagram images are provided as `docs/class-diagram.png` and `docs/sequence-diagram.png`.
