@@ -1,5 +1,6 @@
 @startuml
 skinparam classAttributeIconSize 0
+skinparam shadowing false
 
 class Movie {
   - title : string
@@ -11,6 +12,7 @@ class Movie {
   + getLanguage() : string
   + getDurationMinutes() : int
 }
+
 class Seat {
   - number : int
   - type : SeatType
@@ -19,6 +21,7 @@ class Seat {
   + getType() : SeatType
   + getPrice() : int
 }
+
 class Screen {
   - screenNumber : int
   - seats : vector<Seat>
@@ -26,6 +29,7 @@ class Screen {
   + getScreenNumber() : int
   + getSeats() : vector<Seat>
 }
+
 class Cinema {
   - name : string
   - screens : vector<Screen>
@@ -34,6 +38,7 @@ class Cinema {
   + getName() : string
   + getScreens() : vector<Screen>
 }
+
 class Show {
   - showId : int
   - movie : Movie*
@@ -44,6 +49,7 @@ class Show {
   + findSeat(number) : ShowSeat*
   + displaySeats()
 }
+
 class ShowSeat {
   - seat : Seat*
   - seatStatus : SeatStatus
@@ -51,6 +57,7 @@ class ShowSeat {
   + bookSeat() : bool
   + cancelSeat()
 }
+
 class Customer {
   - name : string
   - phone : string
@@ -58,6 +65,7 @@ class Customer {
   + getName() : string
   + getPhone() : string
 }
+
 class Booking {
   - nextBookingId : int {static}
   - bookingId : int
@@ -72,15 +80,33 @@ class Booking {
   + confirm()
   + cancel()
 }
+
 abstract class Payment {
   {abstract} + pay(amount : double) : bool
   + getMethodName() : string
 }
-class UpiPayment { + pay(amount : double) : bool }
-class CardPayment { + pay(amount : double) : bool }
-class CashPayment { + pay(amount : double) : bool }
-class PriceCalculator { + calculateTotal(seats) : double }
-class TicketPrinter { + print(booking) }
+
+class UpiPayment {
+  + pay(amount : double) : bool
+  + getMethodName() : string
+}
+class CardPayment {
+  + pay(amount : double) : bool
+  + getMethodName() : string
+}
+class CashPayment {
+  + pay(amount : double) : bool
+  + getMethodName() : string
+}
+
+class PriceCalculator {
+  + calculateTotal(seats) : double
+}
+
+class TicketPrinter {
+  + print(booking)
+}
+
 class BookingService {
   - priceCalculator : PriceCalculator
   - ticketPrinter : TicketPrinter
@@ -90,19 +116,19 @@ class BookingService {
   + showTicket(bookingId)
 }
 
-Cinema "1" *-- "1..*" Screen
-Screen "1" *-- "1..*" Seat
-Show "1" o-- "1" Movie
-Show "1" --> "1" Screen
-Show "1" *-- "1..*" ShowSeat
-ShowSeat "1" --> "1" Seat
-Booking "0..*" --> "1" Customer
-Booking "0..*" o-- "1..*" ShowSeat
-Booking "0..*" --> "0..1" Payment
-Payment <|-- UpiPayment
-Payment <|-- CardPayment
-Payment <|-- CashPayment
-BookingService "1" --> "0..*" Booking
-BookingService --> PriceCalculator
-BookingService --> TicketPrinter
+Cinema "1" *-- "1..*" Screen : composition
+Screen "1" *-- "1..*" Seat : composition
+Show "1" o-- "1" Movie : aggregation
+Show "1" --> "1" Screen : uses
+Show "1" *-- "1..*" ShowSeat : composition
+ShowSeat "1" --> "1" Seat : references
+Booking "0..*" --> "1" Customer : associated with
+Booking "0..*" o-- "1..*" ShowSeat : aggregates
+Booking "0..*" --> "0..1" Payment : uses
+Payment <|-- UpiPayment : inheritance
+Payment <|-- CardPayment : inheritance
+Payment <|-- CashPayment : inheritance
+BookingService "1" --> "0..*" Booking : manages
+BookingService --> PriceCalculator : uses
+BookingService --> TicketPrinter : uses
 @enduml
