@@ -1,0 +1,60 @@
+@startuml
+skinparam shadowing false
+
+title Movie Ticket Booking - Customer Books 1 Seat and Pays by UPI
+
+actor Customer
+participant BookingService
+participant Show
+participant ShowSeat
+participant PriceCalculator
+participant UpiPayment
+participant Booking
+participant TicketPrinter
+
+Customer -> BookingService : chooseShow(showId)
+activate BookingService
+
+BookingService -> Show : findSeat(1)
+activate Show
+Show -> ShowSeat : isAvailable()
+activate ShowSeat
+ShowSeat --> Show : true
+deactivate ShowSeat
+Show --> BookingService : available ShowSeat
+deactivate Show
+
+BookingService -> PriceCalculator : calculateTotal([ShowSeat])
+activate PriceCalculator
+PriceCalculator --> BookingService : 150
+deactivate PriceCalculator
+
+create Booking
+BookingService -> Booking : <<create>>(show, customer, seat, 150)
+activate Booking
+
+BookingService -> ShowSeat : bookSeat()
+activate ShowSeat
+ShowSeat --> BookingService : true
+deactivate ShowSeat
+
+create UpiPayment
+BookingService -> UpiPayment : <<create>>
+activate UpiPayment
+BookingService -> UpiPayment : pay(150)
+UpiPayment --> BookingService : payment successful
+deactivate UpiPayment
+
+BookingService -> Booking : confirm()
+Booking --> BookingService : confirmed
+
+BookingService -> TicketPrinter : print(Booking)
+activate TicketPrinter
+TicketPrinter --> BookingService : ticket printed
+deactivate TicketPrinter
+
+BookingService --> Customer : booking confirmed + ticket
+
+deactivate Booking
+deactivate BookingService
+@enduml
