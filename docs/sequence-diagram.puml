@@ -1,0 +1,47 @@
+@startuml
+actor customer
+participant bookingService
+participant show
+participant showSeat
+participant priceCalculator
+participant payment
+participant booking
+participant ticketPrinter
+
+customer -> bookingService : chooseShow(showId)
+activate bookingService
+bookingService -> show : findSeat(1)
+activate show
+show -> showSeat : isAvailable()
+activate showSeat
+showSeat --> show : true
+deactivate showSeat
+show --> bookingService : showSeat
+deactivate show
+bookingService -> priceCalculator : calculateTotal([showSeat])
+activate priceCalculator
+priceCalculator --> bookingService : 150
+deactivate priceCalculator
+create booking
+bookingService -> booking : <<create>>(show, customer, seat, 150)
+activate booking
+bookingService -> showSeat : bookSeat()
+activate showSeat
+showSeat --> bookingService : true
+deactivate showSeat
+create payment
+bookingService -> payment : <<create>> UpiPayment
+bookingService -> payment : pay(150)
+activate payment
+payment --> bookingService : true
+deactivate payment
+bookingService -> booking : confirm()
+booking --> bookingService : confirmed
+bookingService -> ticketPrinter : print(booking)
+activate ticketPrinter
+ticketPrinter --> bookingService : ticket printed
+deactivate ticketPrinter
+bookingService --> customer : booking confirmed + ticket
+deactivate booking
+deactivate bookingService
+@enduml
