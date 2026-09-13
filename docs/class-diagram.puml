@@ -1,0 +1,108 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Movie {
+  - title : string
+  - language : string
+  - durationMinutes : int
+  + Movie(title : string)
+  + Movie(title : string, language : string, durationMinutes : int)
+  + getTitle() : string
+  + getLanguage() : string
+  + getDurationMinutes() : int
+}
+class Seat {
+  - number : int
+  - type : SeatType
+  + Seat(number, type)
+  + getNumber() : int
+  + getType() : SeatType
+  + getPrice() : int
+}
+class Screen {
+  - screenNumber : int
+  - seats : vector<Seat>
+  + Screen(screenNumber, seatCount)
+  + getScreenNumber() : int
+  + getSeats() : vector<Seat>
+}
+class Cinema {
+  - name : string
+  - screens : vector<Screen>
+  + Cinema(name)
+  + addScreen(screenNumber, seatCount)
+  + getName() : string
+  + getScreens() : vector<Screen>
+}
+class Show {
+  - showId : int
+  - movie : Movie*
+  - screen : Screen*
+  - startTime : string
+  - showSeats : vector<ShowSeat>
+  + Show(...)
+  + findSeat(number) : ShowSeat*
+  + displaySeats()
+}
+class ShowSeat {
+  - seat : Seat*
+  - seatStatus : SeatStatus
+  + isAvailable() : bool
+  + bookSeat() : bool
+  + cancelSeat()
+}
+class Customer {
+  - name : string
+  - phone : string
+  + Customer(name, phone)
+  + getName() : string
+  + getPhone() : string
+}
+class Booking {
+  - nextBookingId : int {static}
+  - bookingId : int
+  - show : Show*
+  - customer : Customer*
+  - bookedSeats : vector<ShowSeat*>
+  - bookingAmount : double
+  - status : BookingStatus
+  - payment : Payment*
+  + Booking(...)
+  + setPayment(payment)
+  + confirm()
+  + cancel()
+}
+abstract class Payment {
+  {abstract} + pay(amount : double) : bool
+  + getMethodName() : string
+}
+class UpiPayment { + pay(amount : double) : bool }
+class CardPayment { + pay(amount : double) : bool }
+class CashPayment { + pay(amount : double) : bool }
+class PriceCalculator { + calculateTotal(seats) : double }
+class TicketPrinter { + print(booking) }
+class BookingService {
+  - priceCalculator : PriceCalculator
+  - ticketPrinter : TicketPrinter
+  - bookings : vector<Booking*>
+  + createBooking(customer, show, seatNumbers, payment) : Booking*
+  + cancelBooking(bookingId) : bool
+  + showTicket(bookingId)
+}
+
+Cinema "1" *-- "1..*" Screen
+Screen "1" *-- "1..*" Seat
+Show "1" o-- "1" Movie
+Show "1" --> "1" Screen
+Show "1" *-- "1..*" ShowSeat
+ShowSeat "1" --> "1" Seat
+Booking "0..*" --> "1" Customer
+Booking "0..*" o-- "1..*" ShowSeat
+Booking "0..*" --> "0..1" Payment
+Payment <|-- UpiPayment
+Payment <|-- CardPayment
+Payment <|-- CashPayment
+BookingService "1" --> "0..*" Booking
+BookingService --> PriceCalculator
+BookingService --> TicketPrinter
+@enduml
