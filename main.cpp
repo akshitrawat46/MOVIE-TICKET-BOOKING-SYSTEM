@@ -13,6 +13,9 @@ using namespace std;
 #include "Show.cpp"
 #include "Customer.cpp"
 #include "Payment.cpp"
+#include "UpiPayment.cpp"
+#include "CardPayment.cpp"
+#include "CashPayment.cpp"
 #include "PriceCalculator.cpp"
 #include "Booking.cpp"
 #include "TicketPrinter.cpp"
@@ -39,7 +42,6 @@ int main() {
         int choice;
         if (!(cin >> choice)) { cout << "Invalid input. Program stopped safely.\n"; return 0; }
         if (choice == 0) break;
-
         if (choice == 1) {
             cout << "\nMovies currently playing:\n";
             cout << "1. " << movie1.getTitle() << " (" << movie1.getLanguage() << ", " << movie1.getDurationMinutes() << " min)\n";
@@ -47,8 +49,7 @@ int main() {
         } else if (choice == 2) {
             cout << "\nShows:\n";
             for (const Show& show : shows)
-                cout << show.getShowId() << ". " << show.getMovie()->getTitle() << " | Screen "
-                     << show.getScreen()->getScreenNumber() << " | " << show.getStartTime() << '\n';
+                cout << show.getShowId() << ". " << show.getMovie()->getTitle() << " | Screen " << show.getScreen()->getScreenNumber() << " | " << show.getStartTime() << '\n';
         } else if (choice == 3) {
             int showId; cout << "Enter show ID: "; cin >> showId;
             if (showId < 1 || showId > (int)shows.size()) cout << "Invalid show ID.\n";
